@@ -1,0 +1,147 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+model User {
+  id            String    @id @default(uuid())
+  username      String    @unique
+  passwordHash  String
+  role          String  @default("VIEWER")
+  email         String?
+  isActive      Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  managedStores Store[]
+  auditLogs     AuditLog[]
+  reviews       PerformanceReview[] @relation("Reviewer")
+  trainerInductions Induction[] @relation("InductionTrainer")
+}
+
+model Store {
+  id          String   @id @default(uuid())
+  name        String
+  code        String   @unique
+  address     String?
+  city        String?
+  region      String?
+  managerId   String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  manager     User?    @relation(fields: [managerId], references: [id], onDelete: SetNull)
+  staff       Staff[]
+}
+
+model Staff {
+  id                 String       @id @default(uuid())
+  staffId            String       @unique
+  firstName          String
+  lastName           String
+  email              String?
+  phone              String?
+  position           String
+  department         String?
+  storeId            String
+  passwordHash       String?
+  plainPassword      String?
+  status             String  @default("ACTIVE")
+  hireDate           DateTime?
+  lastPasswordReset  DateTime?
+  taxId              String?
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+
+  store              Store              @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  inductions         Induction[]
+  performanceReviews PerformanceReview[]
+}
+
+
+
+model PerformanceReview {
+  id          String               @id @default(uuid())
+  staffId     String
+  reviewDate  DateTime
+  reviewerId  String
+  score       Int
+  category    String
+  comments    String?
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+
+  staff       Staff  @relation(fields: [staffId], references: [id], onDelete: Cascade)
+  reviewer    User   @relation("Reviewer", fields: [reviewerId], references: [id], onDelete: Cascade)
+
+  @@index([staffId, reviewDate])
+}
+
+model AuditLog {
+  id          String          @id @default(uuid())
+  userId      String
+  action      String
+  entityType  String
+  entityId    String
+  oldValue    String?
+  newValue    String?
+  ipAddress   String?
+  userAgent   String?
+  createdAt   DateTime        @default(now())
+
+  user        User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([entityType, entityId])
+  @@index([createdAt])
+}
+
+model SMTPConfig {
+  id                String         @id @default(uuid())
+  name              String         @unique
+  email             String
+  passwordEncrypted String
+  server            String
+  port              Int
+  encryption        String @default("TLS")
+  isActive          Boolean        @default(false)
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+}
+
+model Induction {
+  id             String    @id @default(uuid())
+  staffId        String
+  startDate      DateTime
+  completionDate DateTime?
+  status         String    @default("PENDING")
+  trainerId      String?
+  notes          String?
+  taxIdVerified  Boolean   @default(false)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  staff          Staff     @relation(fields: [staffId], references: [id], onDelete: Cascade)
+  trainer        User?     @relation("InductionTrainer", fields: [trainerId], references: [id], onDelete: SetNull)
+
+  @@index([staffId])
+}
