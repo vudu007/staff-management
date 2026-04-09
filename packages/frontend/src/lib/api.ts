@@ -1,6 +1,6 @@
 import { ApiResponse, AuthTokens, User } from '@/types';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || (process.env.NODE_ENV === 'production' ? '' : 'http://localhost:3001');
 
 function getHeaders(extra: Record<string, string> = {}): Record<string, string> {
   const headers: Record<string, string> = { 'Content-Type': 'application/json', ...extra };
