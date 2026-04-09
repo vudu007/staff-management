@@ -18,6 +18,7 @@
     "db:studio": "npm run db:studio --workspace=backend",
     "db:push": "npm run db:push --workspace=backend",
     "db:generate": "npm run db:generate --workspace=backend",
+    "postinstall": "npm run db:generate",
     "migrate:data": "tsx scripts/migrate-existing-data.ts"
   },
   "devDependencies": {
