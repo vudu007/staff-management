@@ -7,10 +7,11 @@ import { parseCsv, generateCsv } from '../../utils/csv';
 import multer from 'multer';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as os from 'os';
 
 const router = Router();
 const staffService = new StaffService();
-const upload = multer({ dest: 'uploads/' });
+const upload = multer({ dest: os.tmpdir() });
 
 router.use(authenticate);
 
