@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
 }
 
@@ -22,7 +22,7 @@ datasource db {
 
 
 model User {
-  id            String    @id @default(uuid())
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
   username      String    @unique
   passwordHash  String
   role          String  @default("VIEWER")
@@ -38,13 +38,13 @@ model User {
 }
 
 model Store {
-  id          String   @id @default(uuid())
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
   name        String
   code        String   @unique
   address     String?
   city        String?
   region      String?
-  managerId   String?
+  managerId   String?  @db.ObjectId
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -54,7 +54,7 @@ model Store {
 }
 
 model Staff {
-  id                 String       @id @default(uuid())
+  id                 String       @id @default(auto()) @map("_id") @db.ObjectId
   staffId            String       @unique
   firstName          String
   lastName           String
@@ -62,7 +62,7 @@ model Staff {
   phone              String?
   position           String
   department         String?
-  storeId            String
+  storeId            String  @db.ObjectId
   passwordHash       String?
   plainPassword      String?
   status             String  @default("ACTIVE")
@@ -80,10 +80,10 @@ model Staff {
 
 
 model PerformanceReview {
-  id          String               @id @default(uuid())
-  staffId     String
+  id          String               @id @default(auto()) @map("_id") @db.ObjectId
+  staffId     String  @db.ObjectId
   reviewDate  DateTime
-  reviewerId  String
+  reviewerId  String  @db.ObjectId
   score       Int
   category    String
   comments    String?
@@ -97,8 +97,8 @@ model PerformanceReview {
 }
 
 model AuditLog {
-  id          String          @id @default(uuid())
-  userId      String
+  id          String          @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String  @db.ObjectId
   action      String
   entityType  String
   entityId    String
@@ -116,7 +116,7 @@ model AuditLog {
 }
 
 model SMTPConfig {
-  id                String         @id @default(uuid())
+  id                String         @id @default(auto()) @map("_id") @db.ObjectId
   name              String         @unique
   email             String
   passwordEncrypted String
@@ -129,12 +129,12 @@ model SMTPConfig {
 }
 
 model Induction {
-  id             String    @id @default(uuid())
-  staffId        String
+  id             String    @id @default(auto()) @map("_id") @db.ObjectId
+  staffId        String    @db.ObjectId
   startDate      DateTime
   completionDate DateTime?
   status         String    @default("PENDING")
-  trainerId      String?
+  trainerId      String?   @db.ObjectId
   notes          String?
   taxIdVerified  Boolean   @default(false)
   createdAt      DateTime  @default(now())

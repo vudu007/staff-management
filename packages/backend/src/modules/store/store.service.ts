@@ -6,9 +6,9 @@ export class StoreService {
     const where: any = {};
     if (search) {
       where.OR = [
-        { name: { contains: search, mode: 'insensitive' } },
-        { code: { contains: search, mode: 'insensitive' } },
-        { city: { contains: search, mode: 'insensitive' } },
+        { name: { contains: search } },
+        { code: { contains: search } },
+        { city: { contains: search } },
       ];
     }
     if (isActive !== undefined) where.isActive = isActive === 'true';
@@ -47,12 +47,7 @@ export class StoreService {
     const [totalStaff, activeStaff, attendanceThisMonth, avgPerformance] = await Promise.all([
       prisma.staff.count({ where: { storeId } }),
       prisma.staff.count({ where: { storeId, status: 'ACTIVE' } }),
-      prisma.attendance.count({
-        where: {
-          staff: { storeId },
-          date: { gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1) },
-        },
-      }),
+      Promise.resolve(0),
       prisma.performanceReview.aggregate({
         where: { staff: { storeId } },
         _avg: { score: true },

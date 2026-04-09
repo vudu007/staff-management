@@ -1,10 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
 import prisma from '../config/database';
-import { AuditAction, AuditEntityType } from '@prisma/client';
+
 
 interface AuditOptions {
-  action: AuditAction;
-  entityType: AuditEntityType;
+  action: string;
+  entityType: string;
   entityIdField?: string;
 }
 

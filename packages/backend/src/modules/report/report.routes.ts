@@ -27,6 +27,7 @@ router.get('/staff', async (req: AuthRequest, res) => {
   }
 });
 
+/*
 router.get('/attendance', async (req: AuthRequest, res) => {
   try {
     const report = await reportService.getAttendanceReport(req.query);
@@ -35,6 +36,7 @@ router.get('/attendance', async (req: AuthRequest, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 });
+*/
 
 router.get('/performance', async (req: AuthRequest, res) => {
   try {

@@ -1,0 +1,5 @@
+﻿src/middleware/audit.ts(3,10): error TS2305: Module '"@prisma/client"' has no exported member 'AuditAction'.
+src/middleware/audit.ts(3,23): error TS2305: Module '"@prisma/client"' has no exported member 'AuditEntityType'.
+src/modules/report/report.routes.ts(32,40): error TS2339: Property 'getAttendanceReport' does not exist on type 'ReportService'.
+src/modules/staff/staff.service.ts(59,9): error TS2353: Object literal may only specify known properties, and 'attendance' does not exist in type 'StaffInclude<DefaultArgs>'.
+src/modules/store/store.service.ts(50,14): error TS2339: Property 'attendance' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.

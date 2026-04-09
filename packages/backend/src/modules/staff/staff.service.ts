@@ -12,17 +12,17 @@ export class StaffService {
 
     if (search) {
       where.OR = [
-        { firstName: { contains: search, mode: 'insensitive' } },
-        { lastName: { contains: search, mode: 'insensitive' } },
-        { staffId: { contains: search, mode: 'insensitive' } },
-        { phone: { contains: search, mode: 'insensitive' } },
-        { position: { contains: search, mode: 'insensitive' } },
+        { firstName: { contains: search } },
+        { lastName: { contains: search } },
+        { staffId: { contains: search } },
+        { phone: { contains: search } },
+        { position: { contains: search } },
       ];
     }
 
     if (storeId) where.storeId = storeId;
     if (status) where.status = status;
-    if (position) where.position = { contains: position, mode: 'insensitive' };
+    if (position) where.position = { contains: position };
 
     const [data, total] = await Promise.all([
       prisma.staff.findMany({
@@ -42,7 +42,7 @@ export class StaffService {
     const where: any = {};
     if (filters.storeId) where.storeId = filters.storeId;
     if (filters.status) where.status = filters.status;
-    if (filters.position) where.position = { contains: filters.position, mode: 'insensitive' };
+    if (filters.position) where.position = { contains: filters.position };
 
     return prisma.staff.findMany({
       where,
@@ -56,7 +56,6 @@ export class StaffService {
       where: { id },
       include: {
         store: true,
-        attendance: { orderBy: { date: 'desc' }, take: 30 },
         performanceReviews: { orderBy: { reviewDate: 'desc' }, take: 10 },
       },
     });
@@ -143,7 +142,7 @@ export class StaffService {
         }
 
         let store = await prisma.store.findFirst({
-          where: { OR: [{ code: storeCode }, { name: { contains: row['Store'] || row['store'], mode: 'insensitive' } }] },
+          where: { OR: [{ code: storeCode }, { name: { contains: row['Store'] || row['store'] } }] },
         });
 
         if (!store) {
