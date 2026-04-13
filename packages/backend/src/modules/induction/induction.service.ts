@@ -41,10 +41,19 @@ export class InductionService {
   }
 
   async updateInduction(id: string, data: { status?: string; completionDate?: Date; trainerId?: string; notes?: string; taxIdVerified?: boolean; captureImage?: string }) {
-    return prisma.induction.update({
+    const updated = await prisma.induction.update({
       where: { id },
       data,
     });
+
+    if (data.captureImage) {
+      await prisma.staff.update({
+        where: { id: updated.staffId },
+        data: { profilePicture: data.captureImage }
+      });
+    }
+
+    return updated;
   }
 
   async deleteInduction(id: string) {

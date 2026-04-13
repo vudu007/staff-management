@@ -71,6 +71,7 @@ model Staff {
   hireDate           DateTime?
   lastPasswordReset  DateTime?
   taxId              String?
+  profilePicture     String?
   
   gender                  String?
   dob                     DateTime?

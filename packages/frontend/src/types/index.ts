@@ -26,6 +26,7 @@ export interface Staff {
   status: string;
   hireDate?: string;
   plainPassword?: string;
+  profilePicture?: string;
   createdAt: string;
   updatedAt: string;
   store?: {

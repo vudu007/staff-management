@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { apiFetch } from '@/lib/api';
 import { Staff, Store } from '@/types';
-import { ArrowLeft, Save, Trash2, Key, Mail } from 'lucide-react';
+import { ArrowLeft, Save, Trash2, Key, Mail, User } from 'lucide-react';
 import Link from 'next/link';
 
 export default function EditStaffPage() {
@@ -89,9 +89,18 @@ export default function EditStaffPage() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Link href="/staff" className="p-2 hover:bg-gray-100 rounded-lg"><ArrowLeft className="w-5 h-5" /></Link>
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Edit Staff</h1>
-            <p className="text-gray-500">{staff.firstName} {staff.lastName} ({staff.staffId})</p>
+          <div className="flex items-center gap-4">
+            {staff.profilePicture ? (
+              <img src={staff.profilePicture} alt="Profile" className="w-16 h-16 rounded-full object-cover border border-gray-200 bg-gray-50 shadow-sm" />
+            ) : (
+              <div className="w-16 h-16 rounded-full bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-500 shadow-sm">
+                <User className="w-7 h-7" />
+              </div>
+            )}
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">{staff.firstName} {staff.lastName}</h1>
+              <p className="text-gray-500 font-medium">{staff.position} &bull; {staff.staffId}</p>
+            </div>
           </div>
         </div>
         <div className="flex items-center gap-3">
