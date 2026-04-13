@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { apiFetch } from '@/lib/api';
 import { Store } from '@/types';
-import { Plus, Edit, Store as StoreIcon } from 'lucide-react';
+import { Plus, Edit, Store as StoreIcon, Download, Upload } from 'lucide-react';
 
 export default function StoresPage() {
   const [stores, setStores] = useState<Store[]>([]);
@@ -11,14 +11,81 @@ export default function StoresPage() {
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<string | null>(null);
   const [form, setForm] = useState({ name: '', code: '', address: '', city: '', region: '' });
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const loadStores = () => {
     apiFetch('/api/stores')
       .then(res => { setStores(res.data || []); setLoading(false); })
       .catch(() => setLoading(false));
   };
-
   useEffect(() => { loadStores(); }, []);
+
+  const handleExport = () => {
+    if (stores.length === 0) return alert('No stores to export');
+    const headers = ['id', 'name', 'code', 'address', 'city', 'region'];
+    const csvContent = [
+      headers.join(','),
+      ...stores.map(store => [
+        store.id,
+        `"${store.name}"`,
+        `"${store.code}"`,
+        `"${store.address || ''}"`,
+        `"${store.city || ''}"`,
+        `"${store.region || ''}"`
+      ].join(','))
+    ].join('\n');
+    
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.setAttribute('download', 'stores_export.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      const text = event.target?.result as string;
+      if (!text) return;
+      
+      const rows = text.split('\n');
+      const headers = rows[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
+      
+      let importedCount = 0;
+      for (let i = 1; i < rows.length; i++) {
+        if (!rows[i].trim()) continue;
+        const values = rows[i].split(',').map(val => val.trim().replace(/^"|"$/g, ''));
+        const storeData: any = {};
+        headers.forEach((h, index) => {
+          storeData[h] = values[index];
+        });
+        
+        try {
+          if (storeData.name) {
+            await apiFetch('/api/stores', { method: 'POST', body: JSON.stringify({
+              name: storeData.name,
+              code: storeData.code || '',
+              address: storeData.address || '',
+              city: storeData.city || '',
+              region: storeData.region || ''
+            })});
+            importedCount++;
+          }
+        } catch (err) {
+          console.error(`Failed to import store ${storeData.name}`, err);
+        }
+      }
+      alert(`Successfully imported ${importedCount} stores!`);
+      loadStores();
+    };
+    reader.readAsText(file);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,9 +127,18 @@ export default function StoresPage() {
           <h1 className="text-2xl font-bold text-gray-900">Stores</h1>
           <p className="text-gray-500 mt-1">{stores.length} store locations</p>
         </div>
-        <button onClick={() => { setShowForm(!showForm); setEditing(null); setForm({ name: '', code: '', address: '', city: '', region: '' }); }} className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm hover:bg-indigo-700">
-          <Plus className="w-4 h-4" /> Add Store
-        </button>
+        <div className="flex items-center gap-2">
+          <input type="file" accept=".csv" ref={fileInputRef} onChange={handleImport} className="hidden" />
+          <button onClick={() => fileInputRef.current?.click()} className="flex items-center gap-2 px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg text-sm hover:bg-gray-50">
+            <Upload className="w-4 h-4" /> Import Stores
+          </button>
+          <button onClick={handleExport} className="flex items-center gap-2 px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg text-sm hover:bg-gray-50">
+            <Download className="w-4 h-4" /> Export Stores
+          </button>
+          <button onClick={() => { setShowForm(!showForm); setEditing(null); setForm({ name: '', code: '', address: '', city: '', region: '' }); }} className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm hover:bg-indigo-700">
+            <Plus className="w-4 h-4" /> Add Store
+          </button>
+        </div>
       </div>
 
       {showForm && (

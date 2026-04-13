@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import {
   Users, Store, ClipboardCheck, TrendingUp, BarChart3, UserCog, Settings,
-  LogOut, Menu, X, LayoutDashboard, ChevronLeft, Shield
+  LogOut, Menu, X, LayoutDashboard, ChevronLeft, Shield, Package, FileText
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -16,6 +16,8 @@ const navItems = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, roles: ['SUPER_ADMIN', 'ADMIN', 'MANAGER', 'VIEWER'] },
   { href: '/staff', label: 'Staff', icon: Users, roles: ['SUPER_ADMIN', 'ADMIN', 'MANAGER', 'VIEWER'] },
   { href: '/stores', label: 'Stores', icon: Store, roles: ['SUPER_ADMIN', 'ADMIN', 'MANAGER', 'VIEWER'] },
+  { href: '/inventory', label: 'Inventory', icon: Package, roles: ['SUPER_ADMIN', 'ADMIN', 'MANAGER', 'VIEWER'] },
+  { href: '/requisitions', label: 'Requisitions', icon: FileText, roles: ['SUPER_ADMIN', 'ADMIN', 'MANAGER', 'VIEWER'] },
   { href: '/inductions', label: 'Inductions', icon: ClipboardCheck, roles: ['SUPER_ADMIN', 'ADMIN', 'MANAGER', 'VIEWER'] },
   { href: '/performance', label: 'Performance', icon: TrendingUp, roles: ['SUPER_ADMIN', 'ADMIN', 'MANAGER', 'VIEWER'] },
   { href: '/reports', label: 'Reports', icon: BarChart3, roles: ['SUPER_ADMIN', 'ADMIN', 'MANAGER', 'VIEWER'] },
