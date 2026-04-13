@@ -51,6 +51,8 @@ model Store {
 
   manager     User?    @relation(fields: [managerId], references: [id], onDelete: SetNull)
   staff       Staff[]
+  inventories StoreInventory[]
+  requisitions StoreRequisition[]
 }
 
 model Staff {
@@ -69,12 +71,31 @@ model Staff {
   hireDate           DateTime?
   lastPasswordReset  DateTime?
   taxId              String?
+  
+  gender                  String?
+  dob                     DateTime?
+  duration                String?
+  address                 String?
+  stateOfOrigin           String?
+  lgaOfOrigin             String?
+  nextOfKinName           String?
+  nextOfKinPhone          String?
+  nextOfKinAddress        String?
+  guarantorName           String?
+  guarantorPhone          String?
+  guarantorAddress        String?
+  guarantorEmail          String?
+  emergencyContactName    String?
+  emergencyContactPhone   String?
+  emergencyContactAddress String?
+
   createdAt          DateTime     @default(now())
   updatedAt          DateTime     @updatedAt
 
   store              Store              @relation(fields: [storeId], references: [id], onDelete: Cascade)
   inductions         Induction[]
   performanceReviews PerformanceReview[]
+  letters            StaffLetter[]
 }
 
 
@@ -142,6 +163,68 @@ model Induction {
 
   staff          Staff     @relation(fields: [staffId], references: [id], onDelete: Cascade)
   trainer        User?     @relation("InductionTrainer", fields: [trainerId], references: [id], onDelete: SetNull)
+
+  @@index([staffId])
+}
+
+model StoreInventory {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  storeId     String   @db.ObjectId
+  itemName    String
+  sku         String?
+  quantity    Int      @default(0)
+  unit        String   @default("pcs")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  store       Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  requisitionItems StoreRequisitionItem[]
+
+  @@index([storeId])
+}
+
+model StoreRequisition {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  storeId       String   @db.ObjectId
+  requesterName String?
+  status        String   @default("PENDING") // PENDING, APPROVED, FULFILLED, REJECTED
+  notes         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  store         Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  items         StoreRequisitionItem[]
+
+  @@index([storeId])
+}
+
+model StoreRequisitionItem {
+  id                String           @id @default(auto()) @map("_id") @db.ObjectId
+  requisitionId     String           @db.ObjectId
+  inventoryId       String           @db.ObjectId
+  quantityRequested Int
+  quantityFulfilled Int              @default(0)
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  requisition       StoreRequisition @relation(fields: [requisitionId], references: [id], onDelete: Cascade)
+  inventory         StoreInventory   @relation(fields: [inventoryId], references: [id], onDelete: Cascade)
+
+  @@index([requisitionId])
+}
+
+model StaffLetter {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  staffId     String   @db.ObjectId
+  type        String   // PROMOTION, TERMINATION, WARNING
+  subject     String
+  content     String
+  status      String   @default("DRAFT") // DRAFT, SENT
+  sentAt      DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  staff       Staff    @relation(fields: [staffId], references: [id], onDelete: Cascade)
 
   @@index([staffId])
 }

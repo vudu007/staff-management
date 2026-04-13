@@ -15,6 +15,9 @@ import userRoutes from './modules/user/user.routes';
 import reportRoutes from './modules/report/report.routes';
 import emailRoutes from './modules/email/email.routes';
 import inductionRoutes from './modules/induction/induction.routes';
+import storeInventoryRoutes from './modules/store-inventory/store-inventory.routes';
+import storeRequisitionRoutes from './modules/store-requisition/store-requisition.routes';
+import staffLettersRoutes from './modules/staff-letters/staff-letters.routes';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -39,6 +42,10 @@ app.use('/api/performance', performanceRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/reports', reportRoutes);
 app.use('/api/email', emailRoutes);
+
+app.use('/api/store-inventory', storeInventoryRoutes);
+app.use('/api/store-requisitions', storeRequisitionRoutes);
+app.use('/api/staff-letters', staffLettersRoutes);
 
 app.use(errorHandler);
 

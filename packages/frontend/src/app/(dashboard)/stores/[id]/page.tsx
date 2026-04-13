@@ -113,7 +113,15 @@ export default function StoreDetailPage() {
               <Button size="sm" icon={Save} loading={saving} onClick={handleSave}>Save</Button>
             </>
           ) : (
-            <Button variant="outline" size="sm" icon={Edit} onClick={() => setEditing(true)}>Edit Store</Button>
+            <>
+              <Link href={`/stores/${params.id}/inventory`}>
+                 <Button variant="outline" size="sm" icon={Globe}>Inventory</Button>
+              </Link>
+              <Link href={`/stores/${params.id}/requisitions`}>
+                 <Button variant="outline" size="sm" icon={Globe}>Requisitions</Button>
+              </Link>
+              <Button variant="outline" size="sm" icon={Edit} onClick={() => setEditing(true)}>Edit Store</Button>
+            </>
           )}
         </div>
       </div>
