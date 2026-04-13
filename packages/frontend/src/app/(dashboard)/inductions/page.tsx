@@ -28,7 +28,9 @@ export default function InductionsPage() {
   const { user } = useAuth();
   
   // Modal & Form State
-  const [showModal, setShowModal] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showCaptureModal, setShowCaptureModal] = useState(false);
+  const [pendingInductionId, setPendingInductionId] = useState<string | null>(null);
   const [staffList, setStaffList] = useState<any[]>([]);
   const [selectedStaffId, setSelectedStaffId] = useState('');
   const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
@@ -78,18 +80,25 @@ export default function InductionsPage() {
 
   const wrapUploadModalClose = () => {
     stopCamera();
-    setShowModal(false);
+    setShowCaptureModal(false);
+    setCaptureImage(null);
+    setPendingInductionId(null);
   };
 
   useEffect(() => {
-    if (showModal) {
+    if (showCaptureModal) {
       startCamera();
-      fetchStaff();
     } else {
       stopCamera();
     }
     return () => stopCamera();
-  }, [showModal]);
+  }, [showCaptureModal]);
+
+  useEffect(() => {
+    if (showCreateModal) {
+      fetchStaff();
+    }
+  }, [showCreateModal]);
 
   const capturePhoto = () => {
     if (videoRef.current && canvasRef.current) {
@@ -110,7 +119,6 @@ export default function InductionsPage() {
   const handleCreateInduction = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedStaffId) return alert('Select staff member');
-    if (!captureImage) return alert('Please capture a photo for the induction requirement');
     
     setSubmitting(true);
     try {
@@ -120,16 +128,40 @@ export default function InductionsPage() {
           staffId: selectedStaffId,
           startDate,
           notes,
+          status: 'PENDING'
+        })
+      });
+      if (res.success) {
+        setShowCreateModal(false);
+        fetchInductions();
+        setSelectedStaffId('');
+        setNotes('');
+      }
+    } catch (error: any) {
+      alert(error.message);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleCompleteInduction = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!pendingInductionId) return;
+    if (!captureImage) return alert('Please capture a photo to complete the induction');
+    
+    setSubmitting(true);
+    try {
+      const res = await apiFetch(`/api/induction/${pendingInductionId}`, {
+        method: 'PATCH',
+        body: JSON.stringify({
           status: 'COMPLETED',
+          completionDate: new Date().toISOString(),
           captureImage
         })
       });
       if (res.success) {
         wrapUploadModalClose();
         fetchInductions();
-        setSelectedStaffId('');
-        setNotes('');
-        setCaptureImage(null);
       }
     } catch (error: any) {
       alert(error.message);
@@ -161,7 +193,7 @@ export default function InductionsPage() {
         </div>
         
         {user && ['SUPER_ADMIN', 'ADMIN', 'MANAGER'].includes(user.role) && (
-          <button onClick={() => setShowModal(true)} className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors shadow-sm focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600">
+          <button onClick={() => setShowCreateModal(true)} className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors shadow-sm focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600">
             <Plus className="w-4 h-4" />
             New Induction
           </button>
@@ -268,7 +300,11 @@ export default function InductionsPage() {
                         {ind.notes || '-'}
                       </td>
                       <td className="px-6 py-4 text-right">
-                        <button className="text-indigo-600 hover:text-indigo-800 font-medium">Edit</button>
+                        {ind.status === 'PENDING' ? (
+                           <button onClick={() => { setPendingInductionId(ind.id); setShowCaptureModal(true); }} className="text-green-600 hover:text-green-800 font-medium">Complete</button>
+                        ) : (
+                           <button className="text-indigo-600 hover:text-indigo-800 font-medium">Edit</button>
+                        )}
                       </td>
                     </tr>
                   ))
@@ -279,12 +315,12 @@ export default function InductionsPage() {
         </CardContent>
       </Card>
 
-      {showModal && (
+      {showCreateModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 backdrop-blur-sm">
           <div className="bg-white rounded-xl shadow-xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
             <div className="flex items-center justify-between p-6 border-b border-gray-100">
               <h3 className="text-xl font-bold text-gray-900">New Staff Induction</h3>
-              <button onClick={wrapUploadModalClose} className="text-gray-400 hover:text-gray-600"><X className="w-5 h-5" /></button>
+              <button onClick={() => setShowCreateModal(false)} className="text-gray-400 hover:text-gray-600"><X className="w-5 h-5" /></button>
             </div>
             
             <form onSubmit={handleCreateInduction} className="p-6 space-y-5 overflow-y-auto">
@@ -306,8 +342,28 @@ export default function InductionsPage() {
                   <input value={notes} onChange={e => setNotes(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-indigo-500" />
                </div>
 
+               <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
+                 <button type="button" onClick={() => setShowCreateModal(false)} className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50">Cancel</button>
+                 <button type="submit" disabled={submitting} className="flex items-center gap-2 px-6 py-2 bg-indigo-600 text-white font-medium rounded-lg text-sm hover:bg-indigo-700 disabled:opacity-50">
+                    <CheckCircle className="w-4 h-4" /> {submitting ? 'Saving...' : 'Start Induction'}
+                 </button>
+               </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {showCaptureModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 backdrop-blur-sm">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div className="flex items-center justify-between p-6 border-b border-gray-100">
+              <h3 className="text-xl font-bold text-gray-900">Complete Induction</h3>
+              <button onClick={wrapUploadModalClose} className="text-gray-400 hover:text-gray-600"><X className="w-5 h-5" /></button>
+            </div>
+            
+            <form onSubmit={handleCompleteInduction} className="p-6 space-y-5 overflow-y-auto">
                <div>
-                 <label className="block text-sm font-medium text-gray-700 mb-1.5">Induction Photo Capture (Required)</label>
+                 <label className="block text-sm font-medium text-gray-700 mb-1.5">Induction Photo Capture (Required to Complete)</label>
                  <div className="bg-gray-100 rounded-xl overflow-hidden flex flex-col items-center justify-center p-4 border border-gray-200">
                    {!captureImage ? (
                      <>
@@ -330,8 +386,8 @@ export default function InductionsPage() {
 
                <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
                  <button type="button" onClick={wrapUploadModalClose} className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50">Cancel</button>
-                 <button type="submit" disabled={submitting || !captureImage} className="flex items-center gap-2 px-6 py-2 bg-indigo-600 text-white font-medium rounded-lg text-sm hover:bg-indigo-700 disabled:opacity-50">
-                    <CheckCircle className="w-4 h-4" /> {submitting ? 'Saving...' : 'Complete Induction'}
+                 <button type="submit" disabled={submitting || !captureImage} className="flex items-center gap-2 px-6 py-2 bg-green-600 text-white font-medium rounded-lg text-sm hover:bg-green-700 disabled:opacity-50">
+                    <CheckCircle className="w-4 h-4" /> {submitting ? 'Saving...' : 'Finish Process'}
                  </button>
                </div>
             </form>
