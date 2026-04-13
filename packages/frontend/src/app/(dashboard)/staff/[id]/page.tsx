@@ -21,6 +21,7 @@ export default function EditStaffPage() {
     gender: '', dob: '', duration: '', address: '', stateOfOrigin: '', lgaOfOrigin: '',
     nextOfKinName: '', nextOfKinPhone: '', nextOfKinAddress: '',
     guarantorName: '', guarantorPhone: '', guarantorAddress: '', guarantorEmail: '',
+    guarantor2Name: '', guarantor2Phone: '', guarantor2Address: '', guarantor2Email: '',
     emergencyContactName: '', emergencyContactPhone: '', emergencyContactAddress: ''
   });
 
@@ -40,6 +41,7 @@ export default function EditStaffPage() {
         address: s.address || '', stateOfOrigin: s.stateOfOrigin || '', lgaOfOrigin: s.lgaOfOrigin || '',
         nextOfKinName: s.nextOfKinName || '', nextOfKinPhone: s.nextOfKinPhone || '', nextOfKinAddress: s.nextOfKinAddress || '',
         guarantorName: s.guarantorName || '', guarantorPhone: s.guarantorPhone || '', guarantorAddress: s.guarantorAddress || '', guarantorEmail: s.guarantorEmail || '',
+        guarantor2Name: s.guarantor2Name || '', guarantor2Phone: s.guarantor2Phone || '', guarantor2Address: s.guarantor2Address || '', guarantor2Email: s.guarantor2Email || '',
         emergencyContactName: s.emergencyContactName || '', emergencyContactPhone: s.emergencyContactPhone || '', emergencyContactAddress: s.emergencyContactAddress || ''
       });
       setLoading(false);
@@ -220,14 +222,25 @@ export default function EditStaffPage() {
           </div>
         </div>
 
-        {/* Guarantor */}
+        {/* Guarantor 1 */}
         <div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-4 border-b pb-2">Guarantor Information</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4 border-b pb-2">Guarantor 1 Information</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
              <div><label className={labelClass}>Full Name</label><input value={form.guarantorName} onChange={e => handleInput('guarantorName', e.target.value)} className={inputClass} /></div>
              <div><label className={labelClass}>Phone</label><input value={form.guarantorPhone} onChange={e => handleInput('guarantorPhone', e.target.value)} className={inputClass} /></div>
              <div><label className={labelClass}>Email</label><input type="email" value={form.guarantorEmail} onChange={e => handleInput('guarantorEmail', e.target.value)} className={inputClass} /></div>
              <div><label className={labelClass}>Residential Address</label><input value={form.guarantorAddress} onChange={e => handleInput('guarantorAddress', e.target.value)} className={inputClass} /></div>
+          </div>
+        </div>
+
+        {/* Guarantor 2 */}
+        <div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4 border-b pb-2">Guarantor 2 Information</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+             <div><label className={labelClass}>Full Name</label><input value={form.guarantor2Name} onChange={e => handleInput('guarantor2Name', e.target.value)} className={inputClass} /></div>
+             <div><label className={labelClass}>Phone</label><input value={form.guarantor2Phone} onChange={e => handleInput('guarantor2Phone', e.target.value)} className={inputClass} /></div>
+             <div><label className={labelClass}>Email</label><input type="email" value={form.guarantor2Email} onChange={e => handleInput('guarantor2Email', e.target.value)} className={inputClass} /></div>
+             <div><label className={labelClass}>Residential Address</label><input value={form.guarantor2Address} onChange={e => handleInput('guarantor2Address', e.target.value)} className={inputClass} /></div>
           </div>
         </div>
 

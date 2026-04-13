@@ -86,6 +86,10 @@ model Staff {
   guarantorPhone          String?
   guarantorAddress        String?
   guarantorEmail          String?
+  guarantor2Name          String?
+  guarantor2Phone         String?
+  guarantor2Address       String?
+  guarantor2Email         String?
   emergencyContactName    String?
   emergencyContactPhone   String?
   emergencyContactAddress String?
