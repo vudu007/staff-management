@@ -31,7 +31,7 @@ export class InductionService {
     return induction;
   }
 
-  async createInduction(data: { staffId: string; startDate: Date; status: string; trainerId?: string; notes?: string; taxIdVerified?: boolean }) {
+  async createInduction(data: { staffId: string; startDate: Date; status: string; trainerId?: string; notes?: string; taxIdVerified?: boolean; captureImage?: string }) {
     return prisma.induction.create({
       data,
       include: {
@@ -40,7 +40,7 @@ export class InductionService {
     });
   }
 
-  async updateInduction(id: string, data: { status?: string; completionDate?: Date; trainerId?: string; notes?: string; taxIdVerified?: boolean }) {
+  async updateInduction(id: string, data: { status?: string; completionDate?: Date; trainerId?: string; notes?: string; taxIdVerified?: boolean; captureImage?: string }) {
     return prisma.induction.update({
       where: { id },
       data,
