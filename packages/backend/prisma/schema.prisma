@@ -101,6 +101,7 @@ model Staff {
   inductions         Induction[]
   performanceReviews PerformanceReview[]
   letters            StaffLetter[]
+  examVerifications  ExamVerification[]
 }
 
 
@@ -231,6 +232,30 @@ model StaffLetter {
   updatedAt   DateTime @updatedAt
 
   staff       Staff    @relation(fields: [staffId], references: [id], onDelete: Cascade)
+
+  @@index([staffId])
+}
+
+type SubjectGrade {
+  subject String
+  grade   String
+}
+
+model ExamVerification {
+  id               String         @id @default(auto()) @map("_id") @db.ObjectId
+  staffId          String         @db.ObjectId
+  examBody         String         // WAEC, NECO
+  examType         String         // SSCE INT, SSCE EXT
+  examYear         String
+  examNumber       String
+  pin              String?
+  isVerified       Boolean        @default(false)
+  verificationDate DateTime?
+  results          SubjectGrade[]
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  staff            Staff          @relation(fields: [staffId], references: [id], onDelete: Cascade)
 
   @@index([staffId])
 }

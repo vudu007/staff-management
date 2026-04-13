@@ -18,6 +18,7 @@ import inductionRoutes from './modules/induction/induction.routes';
 import storeInventoryRoutes from './modules/store-inventory/store-inventory.routes';
 import storeRequisitionRoutes from './modules/store-requisition/store-requisition.routes';
 import staffLettersRoutes from './modules/staff-letters/staff-letters.routes';
+import examVerificationRoutes from './modules/exam-verification/exam-verification.routes';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -46,6 +47,7 @@ app.use('/api/email', emailRoutes);
 app.use('/api/store-inventory', storeInventoryRoutes);
 app.use('/api/store-requisitions', storeRequisitionRoutes);
 app.use('/api/staff-letters', staffLettersRoutes);
+app.use('/api/exam-verification', examVerificationRoutes);
 
 app.use(errorHandler);
 

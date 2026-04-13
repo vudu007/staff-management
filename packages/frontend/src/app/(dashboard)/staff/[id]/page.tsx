@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { apiFetch } from '@/lib/api';
 import { Staff, Store } from '@/types';
-import { ArrowLeft, Save, Trash2, Key, Mail, User } from 'lucide-react';
+import { ArrowLeft, Save, Trash2, Key, Mail, User, GraduationCap } from 'lucide-react';
 import Link from 'next/link';
 
 export default function EditStaffPage() {
@@ -106,10 +106,13 @@ export default function EditStaffPage() {
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <Link href={`/staff/${params.id}/letters`} className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 text-gray-700 font-medium rounded-lg text-sm hover:bg-gray-50 transition-colors">
+          <Link href={`/staff/${params.id}/exams`} className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 text-gray-700 font-medium rounded-lg text-sm hover:hover:bg-gray-50 transition-colors">
+            <GraduationCap className="w-4 h-4" /> Exams
+          </Link>
+          <Link href={`/staff/${params.id}/letters`} className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 text-gray-700 font-medium rounded-lg text-sm hover:hover:bg-gray-50 transition-colors">
             <Mail className="w-4 h-4" /> Letters
           </Link>
-          <button onClick={handleDelete} className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white font-medium rounded-lg text-sm hover:bg-red-700 transition-colors">
+          <button onClick={handleDelete} className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white font-medium rounded-lg text-sm hover:hover:bg-red-700 transition-colors">
             <Trash2 className="w-4 h-4" /> Delete
           </button>
         </div>
